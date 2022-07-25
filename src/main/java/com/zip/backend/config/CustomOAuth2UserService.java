@@ -1,4 +1,4 @@
-package com.zip.backend.config.auth;
+package com.zip.backend.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
