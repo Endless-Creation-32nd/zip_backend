@@ -4,6 +4,7 @@ package com.zip.backend.config;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class AppProperties {
     private final OAuth2 oatuh2=new OAuth2();
 
     @Getter
+    @Setter
     @RequiredArgsConstructor
     public static class Auth{
         private String tokenSecret;
