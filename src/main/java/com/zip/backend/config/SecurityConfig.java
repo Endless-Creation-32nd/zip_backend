@@ -1,6 +1,12 @@
 package com.zip.backend.config;
 
 import com.zip.backend.domain.user.Role;
+import com.zip.backend.security.CustomUserDetailsService;
+import com.zip.backend.security.TokenAuthenticationFilter;
+import com.zip.backend.security.oauth2.CustomOAuth2UserService;
+import com.zip.backend.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.zip.backend.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.zip.backend.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

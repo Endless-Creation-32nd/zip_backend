@@ -1,5 +1,6 @@
 package com.zip.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,13 +9,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final long MAX_AGE_SECS=3600;
 
+    @Value("${app.cors.allowedOrigins}")
+    private String[] allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 // CORS 적용할 URL 패턴
                 .addMapping("/**")
                 // 자원을 공유할 오리진 지정
-                .allowedOrigins("*")
+                .allowedOrigins(allowedOrigins)
                 // 요청 허용 메소드
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 // 요청 허용 헤더
