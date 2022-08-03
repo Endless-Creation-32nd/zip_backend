@@ -1,19 +1,14 @@
 package com.zip.backend.controller.dto;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter // Json 객체 받아오기 위해 설정, 생성자 삭제함
 public class SignUpRequest {
 
     private String name;
     private String email;
     private String password;
 
-    @Builder
-    public SignUpRequest(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
 }

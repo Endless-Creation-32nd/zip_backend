@@ -27,10 +27,10 @@ public class User  {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column (nullable = false)
+    @Column (nullable = true) // local signup을 위해 true로 설정
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // local signup을 위해 true로 설정
     private Boolean emailVerified = false;
 
     @JsonIgnore

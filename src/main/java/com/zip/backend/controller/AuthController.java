@@ -41,10 +41,11 @@ public class AuthController {
                         loginRequest.getPassword()
                 )
         );
-
+        // 실제 SecurityContext 에 authentication 정보를 등록
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = tokenProvider.createToken(authentication);
+        // ResponseEntity 와 ok(200) status code 를 한 번에 보내는 코드
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
@@ -53,8 +54,8 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("이미 해당 이메일을 사용하고 있습니다.");
         }
-
-        // 계정 생성
+        // 계정 생성 (local 로 생성 + DB 에 저장)
+        // builder() 이후에 없는 필드들은 null 로 넘겨지게 된다.
         User result = userRepository.save(User.builder()
                 .name(signUpRequest.getName())
                 .email(signUpRequest.getEmail())
