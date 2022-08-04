@@ -54,7 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
-    // SecurtiyConfig 에서 사용할 password encoder를 BCrptPasswordEncoder 로 정의
+
+    // SecurityConfig 에서 사용할 password encoder 를 BCryptPasswordEncoder 로 정의
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -76,18 +77,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // CORS 허용
                 .cors()
                 .and()
-                // 토큰을 사용하기 위해 sessionCreationPolicy를 STATELESS로 설정 (Session 비활성화)
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                // 토큰을 사용하기 위해 sessionCreationPolicy 를 STATELESS 로 설정 (Session 비활성화)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // CSRF 비활성화
-                    .csrf().disable()
+                .csrf().disable()
                 // 로그인폼 비활성화
-                    .formLogin().disable()
+                .formLogin().disable()
                 // 기본 로그인 창 비활성화
-                    .httpBasic().disable()
-                    .authorizeRequests()
-                        .antMatchers("/").permitAll()
+                .httpBasic().disable()
+                .authorizeRequests()
+                .antMatchers("/").permitAll()
                         .antMatchers("api/**").hasAnyRole(Role.GUEST.name(),Role.USER.name(),Role.ADMIN.name())
                         .antMatchers("/auth/**","/oauth2/**").permitAll()
                         .anyRequest().authenticated()

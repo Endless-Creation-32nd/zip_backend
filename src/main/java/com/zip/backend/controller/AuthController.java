@@ -3,7 +3,6 @@ package com.zip.backend.controller;
 import com.zip.backend.domain.user.AuthProvider;
 import com.zip.backend.domain.user.User;
 import com.zip.backend.domain.user.UserRepository;
-import com.zip.backend.exception.BadRequestException;
 import com.zip.backend.controller.dto.ApiResponse;
 import com.zip.backend.controller.dto.AuthResponse;
 import com.zip.backend.controller.dto.LoginRequest;
@@ -16,10 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -46,13 +42,15 @@ public class AuthController {
 
         String token = tokenProvider.createToken(authentication);
         // ResponseEntity 와 ok(200) status code 를 한 번에 보내는 코드
+        // ResponseEntity 에 씌워서 보내면 Json 형태로 받음
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("이미 해당 이메일을 사용하고 있습니다.");
+            throw new RuntimeException("이미 해당 이메일을 사용하고 있습니다.");
+//            return ResponseEntity.ok(new EmailDuplicatedException("이미 해당 이메일을 사용하고 있습니다."));
         }
         // 계정 생성 (local 로 생성 + DB 에 저장)
         // builder() 이후에 없는 필드들은 null 로 넘겨지게 된다.
@@ -70,4 +68,6 @@ public class AuthController {
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다."));
     }
+
+
 }
