@@ -46,10 +46,21 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return userPrincipal;
     }
 
+    // UserDetails interface override
+    // getAuthorities() 와 getPassword() 는 구현하지 않아도 되는듯 ??
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
     @Override
     public  String getUsername() {
         return email;
     }
+
+    @Override
+    public String getPassword() { return password; }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -71,9 +82,11 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return true;
     }
 
+    // OAuth2User interface override
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getName() {
+        return String.valueOf(id);
     }
 
     @Override
@@ -81,10 +94,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return attributes;
     }
 
-    @Override
-    public String getName() {
-        return String.valueOf(id);
-    }
+
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
