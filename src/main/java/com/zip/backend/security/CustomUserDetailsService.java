@@ -17,6 +17,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
+    // email 을 입력받아서 Repository 에 있으면 UserPrincipal 객체의 형태로 반환
+    // 없으면 예외처리
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
