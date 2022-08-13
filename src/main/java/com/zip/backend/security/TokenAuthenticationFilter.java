@@ -38,7 +38,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             logger.error("Security Context 에서 사용자 인증을 설정할 수 없습니다", ex);
         }
-        filterChain.doFilter(request,response);
+
+        filterChain.doFilter(request,response); // 서블릿을 실행하는 메소드
     }
 
     // header 에 "Authorization" key 에 해당하는 value 값이 다음과 같다

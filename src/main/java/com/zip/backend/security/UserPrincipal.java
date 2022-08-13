@@ -32,6 +32,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     public static UserPrincipal create(User user) {
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
+        // User 객체에서 id, email, password, authorities 만 가져옴
         return new UserPrincipal(
                 user.getId(),
                 user.getEmail(),

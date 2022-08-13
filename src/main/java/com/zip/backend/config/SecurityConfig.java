@@ -21,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
         return new TokenAuthenticationFilter();
     }
-    // default로 spring OAuth2 는 HttpSessionOAuth2AuthorizationRequestRepository 를 사용
+    // default 로 spring OAuth2 는 HttpSessionOAuth2AuthorizationRequestRepository 를 사용
     // but, JWT 를 사용하기 때문에 SESSION 에 저장할 필요가 없어서 Authorization Request 를 Based64 encoded cookie 에 저장
     @Bean
     public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
@@ -74,29 +75,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                // 기본 로그인 창 비활성화
+                .httpBasic().disable()
+                // 로그인폼 비활성화
+                .formLogin().disable()
                 // CORS 허용
                 .cors()
                 .and()
-                // 토큰을 사용하기 위해 sessionCreationPolicy 를 STATELESS 로 설정 (Session 비활성화)
+                // JWT 로 인증하기에 sessionCreationPolicy 를 STATELESS 로 설정 (session 비활성화)
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // CSRF 비활성화
                 .csrf().disable()
-                // 로그인폼 비활성화
-                .formLogin().disable()
-                // 기본 로그인 창 비활성화
-                .httpBasic().disable()
+
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                        .antMatchers("api/**").hasAnyRole(Role.GUEST.name(),Role.USER.name(),Role.ADMIN.name())
                         .antMatchers("/auth/**","/oauth2/**").permitAll()
+                        .antMatchers("/api/**").hasAnyRole(Role.GUEST.name(),Role.USER.name(),Role.ADMIN.name())
                         .anyRequest().authenticated()
                 .and()
                     .oauth2Login()
                         .authorizationEndpoint()
                 // 클라이언트 처음 로그인 시도 URI
-                        .baseUri("/oauth2/authorization")
+                        .baseUri( "/oauth2/authorization")
 
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                 .and()
@@ -109,5 +111,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Add our custom Token based authentication filter
         // UsernamePasswordAuthenticationFilter 앞에 custom 필터 추가!
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
     }
 }
