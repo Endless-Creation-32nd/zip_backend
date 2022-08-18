@@ -1,24 +1,25 @@
 package com.zip.backend.controller;
 
-import com.zip.backend.domain.user.AuthProvider;
-import com.zip.backend.domain.user.User;
-import com.zip.backend.domain.user.UserRepository;
 import com.zip.backend.controller.dto.ApiResponse;
 import com.zip.backend.controller.dto.AuthResponse;
 import com.zip.backend.controller.dto.LoginRequest;
 import com.zip.backend.controller.dto.SignUpRequest;
+import com.zip.backend.domain.user.AuthProvider;
+import com.zip.backend.domain.user.User;
+import com.zip.backend.domain.user.UserRepository;
 import com.zip.backend.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -32,10 +33,10 @@ public class AuthController {
     @PostMapping("/login")
     ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
+                        new UsernamePasswordAuthenticationToken(
+                                loginRequest.getEmail(),
+                                loginRequest.getPassword()
+                        )
         );
         // 실제 SecurityContext 에 authentication 정보를 등록
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -61,12 +62,16 @@ public class AuthController {
                 .provider(AuthProvider.local)
                 .build());
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(result.getId()).toUri();
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentContextPath().path("/user/me")
+//                .buildAndExpand(result.getId()).toUri();
 
-        return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다."));
+        // 주어진 location URI 와 함께 Created message status code 를 보냄
+//        return ResponseEntity.created(location)
+//                .body(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다."));
+
+        // 굳이 URI 를 /user/me 쪽으로 보내줄 필요 없어서 위 과정 생략함
+        return new ResponseEntity<>(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다"), HttpStatus.CREATED);
     }
 
 
