@@ -25,9 +25,15 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
+    // 구글로부터 받은 userRequest 데이터에 대한 후처리 되는 메소드
+    // 로그인 후에 oAuth2UserRequest 에는 clientRegistration + access token 모두 저장된다
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
+        System.out.println(oAuth2UserRequest.getClientRegistration());
+        System.out.println(oAuth2UserRequest.getAccessToken());
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
+        System.out.println(oAuth2User.getAttributes());
+        // 회원가입 강제로 진행할 예정..
         try {
             return processOAuth2User(oAuth2UserRequest, oAuth2User);
         } catch (AuthenticationException ex) {
