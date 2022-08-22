@@ -2,16 +2,12 @@ package com.zip.backend.security.oauth2.user;
 
 import java.util.Map;
 
-public class GoogleOAuth2UserInfo extends OAuth2UserInfo{
+public class GoogleOAuth2UserInfo implements OAuth2UserInfo {
+    private Map<String,Object> attributes;
+
     public GoogleOAuth2UserInfo(Map<String, Object> attributes) {
-        super(attributes);
+        this.attributes = attributes;
     }
-
-    @Override
-    public String getId() {
-        return (String) attributes.get("sub");
-    }
-
     @Override
     public String getName() {
         return (String) attributes.get("name");
@@ -23,7 +19,12 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo{
     }
 
     @Override
-    public String getImageUrl() {
-        return (String) attributes.get("picture");
+    public String getProvider() {
+        return "google";
+    }
+
+    @Override
+    public String getProviderId() {
+        return (String) attributes.get("sub");
     }
 }

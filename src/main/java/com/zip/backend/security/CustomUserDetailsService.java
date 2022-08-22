@@ -19,20 +19,21 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     // email 을 입력받아서 Repository 에 있으면 UserPrincipal 객체의 형태로 반환
     // 없으면 예외처리
+    // 시큐리티 session(내부 Authentication(내부 UserDetails))
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email :" + email));
-        return UserPrincipal.create(user);
+        return new UserPrincipal(user);
     }
 
     @Transactional
     public UserDetails loadUserById(Long id) {
         User user=userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User","id",id));
-        return UserPrincipal.create(user);
+        return new UserPrincipal(user);
     }
 
 }

@@ -23,16 +23,6 @@ public class User  {
     @Column (nullable = false)
     private String email;
 
-    @Column
-    private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column (nullable = true) // local signup을 위해 true로 설정
-    private Role role;
-
-    @Column(nullable = true) // local signup을 위해 true로 설정
-    private Boolean emailVerified = false;
-
     @JsonIgnore
     @Column
     private String password;
@@ -44,21 +34,23 @@ public class User  {
     @Column
     private String providerId;
 
+    @Enumerated(EnumType.STRING)
+    @Column (nullable = true) // local signup을 위해 true로 설정
+    private Role role;
+
     @Builder
-    public User(String name, String email, String imageUrl, Role role, Boolean emailVerified, String password, AuthProvider provider, String providerId) {
+    public User(String name, String email , Role role, String password, AuthProvider provider, String providerId) {
         this.name = name;
         this.email = email;
-        this.imageUrl = imageUrl;
         this.role = role;
-        this.emailVerified = emailVerified;
         this.password = password;
         this.provider = provider;
         this.providerId = providerId;
     }
 
-    public User update(String name, String imageUrl) {
+    public User update(String name, String email) {
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.email = email;
         return this;
     }
 }

@@ -1,12 +1,12 @@
 package com.zip.backend.security.oauth2;
 
 import com.zip.backend.domain.user.AuthProvider;
+import com.zip.backend.domain.user.Role;
 import com.zip.backend.domain.user.User;
 import com.zip.backend.domain.user.UserRepository;
-import com.zip.backend.exception.OAuth2AuthenticationProcessingException;
 import com.zip.backend.security.UserPrincipal;
+import com.zip.backend.security.oauth2.user.GoogleOAuth2UserInfo;
 import com.zip.backend.security.oauth2.user.OAuth2UserInfo;
-import com.zip.backend.security.oauth2.user.OAuth2UserInfoFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -15,8 +15,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -29,8 +29,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     // 로그인 후에 oAuth2UserRequest 에는 clientRegistration + access token 모두 저장된다
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
-        System.out.println(oAuth2UserRequest.getClientRegistration());
+        System.out.println(oAuth2UserRequest.getClientRegistration()); // registrationId 로 어떤 OAuth 로그인인지 알 수 있다
         System.out.println(oAuth2UserRequest.getAccessToken());
+        // 구글 로그인 버튼 클릭 -> 구글 로그인 창 -> 로그인을 완료 -> code 를 리턴(OAuth client 라이브러리) -> Access Token 요청
+        // 위 까지가 oAuth2UserRequest 정보 -> loadUser 메소드 호출 -> 구글로부터 회원 프로필 받아준다
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
         System.out.println(oAuth2User.getAttributes());
         // 회원가입 강제로 진행할 예정..
@@ -46,45 +48,45 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     // 사용자 정보 추출
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
-        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(
-                oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
+        String oAuth2Provider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        // 특정 OAuth2 공급자(구글,네이버,카카오 중 하나) 가져옴
+        OAuth2UserInfo oAuth2UserInfo = determineProvider(oAuth2Provider, attributes);
 
-        if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
-            throw new OAuth2AuthenticationProcessingException("OAuth2 공급자(구글,네이버,...) 에서 이메일을 찾을 수 없습니다.");
-        }
+        Optional<User> userOptional = userRepository.findByProviderAndProviderId(AuthProvider.valueOf(oAuth2UserInfo.getProvider()), oAuth2UserInfo.getProviderId());
 
-        Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
+        // DB에 계정이 없는 경우 -> 새로 생성
         User user;
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-
-            if (!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
-                throw new OAuth2AuthenticationProcessingException(
-                        user.getProvider() + "계정을 사용하기 위해서 로그인을 해야합니다.");
-            }
-            user = updateExistingUser(user, oAuth2UserInfo);
-        }else{
-            user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+        if(!userOptional.isPresent()){
+            user = registerNewUser(oAuth2UserInfo);
         }
-
-        return UserPrincipal.create(user, oAuth2User.getAttributes());
-
+        // DB에 계정이 이미 존재하는 경우 -> 정보 update (name & email)
+        else{
+            User tempUser = userOptional.get();
+            user = updateExistingUser(tempUser, oAuth2UserInfo);
+        }
+        return new UserPrincipal(user, attributes);
     }
 
-    // DB 에 존재하지 않을 경우 새로 등록
-    private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        return userRepository.save(User.builder()
+    // 어떤 소셜 로그인인지 구분
+    private OAuth2UserInfo determineProvider(String oAuth2Provider, Map<String, Object> attributes) {
+        if(oAuth2Provider.equals("google")) return new GoogleOAuth2UserInfo(attributes);
+        return null;
+    }
+
+    private User registerNewUser(OAuth2UserInfo oAuth2UserInfo) {
+        User user=User.builder()
                 .name(oAuth2UserInfo.getName())
                 .email(oAuth2UserInfo.getEmail())
-                .imageUrl(oAuth2UserInfo.getImageUrl())
-                .provider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
-                .providerId(oAuth2UserInfo.getId())
-                .build());
+                .provider(AuthProvider.valueOf(oAuth2UserInfo.getProvider()))
+                .providerId(oAuth2UserInfo.getProviderId())
+                .role(Role.USER)
+                .build();
+        return userRepository.save(user);
     }
 
-    // DB 에 존재할 경우 정보 업데이트
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        return userRepository.save(
-                existingUser.update(oAuth2UserInfo.getName(), oAuth2UserInfo.getImageUrl()));
+        User user = existingUser.update(oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail());
+        return userRepository.save(user);
     }
 }

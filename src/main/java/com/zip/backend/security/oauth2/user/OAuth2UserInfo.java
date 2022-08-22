@@ -2,21 +2,14 @@ package com.zip.backend.security.oauth2.user;
 
 import java.util.Map;
 
-public abstract class OAuth2UserInfo {
-    protected Map<String,Object> attributes;
+public interface OAuth2UserInfo {
 
-    public OAuth2UserInfo (Map<String,Object> attributes) {
-        this.attributes = attributes;
-    }
-    public Map<String,Object> getAttributes() {
-        return attributes;
-    }
+    String getName();
 
-    public abstract String getId();
+    String getEmail();
 
-    public abstract String getName();
+    String getProvider();
 
-    public abstract String getEmail();
+    String getProviderId();
 
-    public abstract String getImageUrl();
 }

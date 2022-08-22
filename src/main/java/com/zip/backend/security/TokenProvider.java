@@ -39,7 +39,7 @@ public class TokenProvider {
         // Token : header / payload / signature
         // 이 중에서 payload 에 해당하는 부분을 작성하는 부분과 signature 부분 생성
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
+                .setSubject(Long.toString(userPrincipal.getUser().getId()))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512,secretKey)

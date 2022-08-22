@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     // SecurityConfig 에서 사용할 password encoder 를 BCryptPasswordEncoder 로 정의
+    // spring container 에 등록됨
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -91,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
+                        .antMatchers("/test/login").permitAll()
                         .antMatchers("/auth/**","/oauth2/**").permitAll()
                         .antMatchers("/api/**").hasAnyRole(Role.GUEST.name(),Role.USER.name(),Role.ADMIN.name())
                         .anyRequest().authenticated()
