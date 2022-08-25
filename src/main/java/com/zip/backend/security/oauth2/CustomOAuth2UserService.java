@@ -6,6 +6,7 @@ import com.zip.backend.domain.user.User;
 import com.zip.backend.domain.user.UserRepository;
 import com.zip.backend.security.UserPrincipal;
 import com.zip.backend.security.oauth2.user.GoogleOAuth2UserInfo;
+import com.zip.backend.security.oauth2.user.KakaoOAuth2UserInfo;
 import com.zip.backend.security.oauth2.user.NaverOAuth2UserInfo;
 import com.zip.backend.security.oauth2.user.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private OAuth2UserInfo determineProvider(String oAuth2Provider, Map<String, Object> attributes) {
         if(oAuth2Provider.equals("google")) return new GoogleOAuth2UserInfo(attributes);
         else if(oAuth2Provider.equals("naver")) return new NaverOAuth2UserInfo(attributes);
+        else if(oAuth2Provider.equals("kakao")) return new KakaoOAuth2UserInfo(attributes);
+
         return null;
     }
 

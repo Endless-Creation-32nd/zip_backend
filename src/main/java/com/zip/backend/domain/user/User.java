@@ -20,7 +20,8 @@ public class User  {
     @Column(nullable = false)
     private String name;
 
-    @Column (nullable = false)
+    // 카카오 로그인 때문에 email 값이 null 이 될 수 있음 (선택동의 사항이라)
+    @Column
     private String email;
 
     @JsonIgnore
