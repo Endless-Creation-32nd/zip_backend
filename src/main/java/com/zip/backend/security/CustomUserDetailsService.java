@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     // email 을 입력받아서 Repository 에 있으면 UserPrincipal 객체의 형태로 반환
     // 없으면 예외처리
     // 시큐리티 session(내부 Authentication(내부 UserDetails))
+    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

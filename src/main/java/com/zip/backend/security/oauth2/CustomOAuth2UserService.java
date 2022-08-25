@@ -6,6 +6,7 @@ import com.zip.backend.domain.user.User;
 import com.zip.backend.domain.user.UserRepository;
 import com.zip.backend.security.UserPrincipal;
 import com.zip.backend.security.oauth2.user.GoogleOAuth2UserInfo;
+import com.zip.backend.security.oauth2.user.NaverOAuth2UserInfo;
 import com.zip.backend.security.oauth2.user.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -27,10 +28,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     // 구글로부터 받은 userRequest 데이터에 대한 후처리 되는 메소드
     // 로그인 후에 oAuth2UserRequest 에는 clientRegistration + access token 모두 저장된다
+    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
         System.out.println(oAuth2UserRequest.getClientRegistration()); // registrationId 로 어떤 OAuth 로그인인지 알 수 있다
         System.out.println(oAuth2UserRequest.getAccessToken());
+        System.out.println(oAuth2UserRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint());
+        System.out.println(oAuth2UserRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName());
         // 구글 로그인 버튼 클릭 -> 구글 로그인 창 -> 로그인을 완료 -> code 를 리턴(OAuth client 라이브러리) -> Access Token 요청
         // 위 까지가 oAuth2UserRequest 정보 -> loadUser 메소드 호출 -> 구글로부터 회원 프로필 받아준다
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -71,6 +75,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     // 어떤 소셜 로그인인지 구분
     private OAuth2UserInfo determineProvider(String oAuth2Provider, Map<String, Object> attributes) {
         if(oAuth2Provider.equals("google")) return new GoogleOAuth2UserInfo(attributes);
+        else if(oAuth2Provider.equals("naver")) return new NaverOAuth2UserInfo(attributes);
         return null;
     }
 

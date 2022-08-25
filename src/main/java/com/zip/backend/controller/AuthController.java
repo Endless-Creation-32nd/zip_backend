@@ -5,6 +5,7 @@ import com.zip.backend.controller.dto.AuthResponse;
 import com.zip.backend.controller.dto.LoginRequest;
 import com.zip.backend.controller.dto.SignUpRequest;
 import com.zip.backend.domain.user.AuthProvider;
+import com.zip.backend.domain.user.Role;
 import com.zip.backend.domain.user.User;
 import com.zip.backend.domain.user.UserRepository;
 import com.zip.backend.security.TokenProvider;
@@ -60,6 +61,7 @@ public class AuthController {
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .provider(AuthProvider.local)
+                .role(Role.USER)
                 .build());
 
 //        URI location = ServletUriComponentsBuilder

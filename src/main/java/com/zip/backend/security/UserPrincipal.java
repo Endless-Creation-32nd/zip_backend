@@ -27,6 +27,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     }
 
     // OAuth 2.0 로그인 시 사용
+    // attributes 정보를 통해 user 정보 생성함
     public UserPrincipal(User user, Map<String, Object> attributes) {
         this.user = user;
         this.attributes = attributes;
@@ -75,6 +76,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     // OAuth2User interface override
 
+    // User 의 id
     @Override
     public String getName() {
         return String.valueOf(user.getId());

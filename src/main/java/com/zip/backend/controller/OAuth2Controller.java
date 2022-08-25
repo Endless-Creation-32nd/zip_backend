@@ -18,6 +18,7 @@ public class OAuth2Controller {
     }
 
     // DI(의존성 주입) + @AuthenticationPrincipal 을 통해 세션 정보 접근 , UserDetails 를 UserPrincipal 로 구현 가능
+    // OAuth2 로그인이든, 일반 로그인이든 모두 UserPrincipal 로 받아올 수 있다
     @GetMapping("/test/login")
     public @ResponseBody String testLogin(Authentication authentication, @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("/test/login ===========");
@@ -32,8 +33,12 @@ public class OAuth2Controller {
     public @ResponseBody String testOAuthLogin(Authentication authentication, @AuthenticationPrincipal UserPrincipal oauth) {
         System.out.println("/test/oauth/login ===========");
         // (oAuth2User 로 casting 필요한듯)
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        System.out.println("authentication: "+oAuth2User.getAttributes());
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        System.out.println(userPrincipal.getUser().getId());
+        System.out.println(userPrincipal.getUser().getEmail());
+        System.out.println(userPrincipal.getUser().getName());
+        System.out.println(userPrincipal.getUser().getProvider());
+        System.out.println("authentication: "+userPrincipal.getAttributes());
         System.out.println("authentication: "+oauth.getAttributes());
 
         return "OAuth 세션 정보 확인하기";
