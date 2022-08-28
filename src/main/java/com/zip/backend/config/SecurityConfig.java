@@ -109,8 +109,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .successHandler(oAuth2AuthenticationSuccessHandler)
                     .failureHandler(oAuth2AuthenticationFailureHandler);
 
-        // Add our custom Token based authentication filter
+
         // UsernamePasswordAuthenticationFilter 앞에 custom 필터 추가!
+        // 로그인 필터 돌기전에 Token 필터 돌아가게끔
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }

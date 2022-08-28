@@ -50,19 +50,20 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByProviderAndEmail(AuthProvider.local, signUpRequest.getEmail())) {
             throw new RuntimeException("이미 해당 이메일을 사용하고 있습니다.");
 //            return ResponseEntity.ok(new EmailDuplicatedException("이미 해당 이메일을 사용하고 있습니다."));
         }
         // 계정 생성 (local 로 생성 + DB 에 저장)
         // builder() 이후에 없는 필드들은 null 로 넘겨지게 된다.
-        User result = userRepository.save(User.builder()
+        User localUserInfo = User.builder()
                 .name(signUpRequest.getName())
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .provider(AuthProvider.local)
                 .role(Role.USER)
-                .build());
+                .build();
+        userRepository.save(localUserInfo);
 
 //        URI location = ServletUriComponentsBuilder
 //                .fromCurrentContextPath().path("/user/me")

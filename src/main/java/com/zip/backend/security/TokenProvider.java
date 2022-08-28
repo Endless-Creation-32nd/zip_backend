@@ -31,6 +31,7 @@ public class TokenProvider {
 
     // JWT 을 만들어내는 메소드
     public String createToken(Authentication authentication) {
+        // token 을 만들기 위해 Authentication 객체를 불러오게 된다
         UserPrincipal userPrincipal= (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
