@@ -28,7 +28,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Autowired
-
     public OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
         this.tokenProvider = tokenProvider;
         this.appProperties = appProperties;
@@ -37,13 +36,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         String targetUrl = determineTargetUrl(request, response, authentication);
         if (response.isCommitted()) {
             logger.debug("응답이 이미 커밋되었습니다. " + targetUrl + "로 리다이렉션을 할 수 없습니다");
             return;
         }
-        clearAuthenticationAttributes(request,response); // attribute 도 지우고 cookie 도 지우기
-        getRedirectStrategy().sendRedirect(request,response,targetUrl);
+        clearAuthenticationAttributes(request, response); // attribute 도 지우고 cookie 도 지우기
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
 
@@ -57,7 +57,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
         String token = tokenProvider.createToken(authentication);
 
-        return UriComponentsBuilder.fromUriString(targetUrl)
+        return UriComponentsBuilder.fromUriString(targetUrl).path("/oauth2/success")
                 .queryParam("token", token)
                 .build().toUriString();
     }

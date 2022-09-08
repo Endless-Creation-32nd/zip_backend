@@ -32,13 +32,15 @@ public class AuthController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/login")
-    ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    ResponseEntity<AuthResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        // 강제로 authentication 객체를 만드는 과정
         Authentication authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
                                 loginRequest.getEmail(),
                                 loginRequest.getPassword()
                         )
         );
+
         // 실제 SecurityContext 에 authentication 정보를 등록
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

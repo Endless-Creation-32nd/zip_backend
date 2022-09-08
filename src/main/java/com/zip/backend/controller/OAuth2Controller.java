@@ -1,13 +1,13 @@
 package com.zip.backend.controller;
 
+import com.zip.backend.controller.dto.AuthResponse;
 import com.zip.backend.security.UserPrincipal;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class OAuth2Controller {
@@ -42,6 +42,11 @@ public class OAuth2Controller {
         System.out.println("authentication: "+oauth.getAttributes());
 
         return "OAuth 세션 정보 확인하기";
+    }
+
+    @GetMapping("/oauth2/success")
+    public ResponseEntity<AuthResponse> testOAuth2Login(@RequestParam String token) {
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 
 }
