@@ -4,8 +4,6 @@ import com.zip.backend.domain.user.Role;
 import com.zip.backend.security.CustomUserDetailsService;
 import com.zip.backend.security.TokenAuthenticationFilter;
 import com.zip.backend.security.oauth2.CustomOAuth2UserService;
-import com.zip.backend.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.zip.backend.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.zip.backend.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,9 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+//    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+//    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
@@ -43,10 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     // default 로 spring OAuth2 는 HttpSessionOAuth2AuthorizationRequestRepository 를 사용
     // but, JWT 를 사용하기 때문에 SESSION 에 저장할 필요가 없어서 Authorization Request 를 Based64 encoded cookie 에 저장
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
+//    @Bean
+//    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+//        return new HttpCookieOAuth2AuthorizationRequestRepository();
+//    }
 
     // Authorization 에 사용할 userDetailsService와 passworkd Encoder 정의
     @Override
@@ -97,15 +95,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .oauth2Login()
                         .authorizationEndpoint()
                 // 클라이언트 처음 로그인 시도 URI
-                        .baseUri( "/oauth2/authorization")
+//                        .baseUri( "/oauth2/authorization")
 
-                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+//                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                 .and()
                     .userInfoEndpoint()
                         .userService(customOAuth2UserService)
                 .and()
-                    .successHandler(oAuth2AuthenticationSuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler);
+                    .successHandler(oAuth2AuthenticationSuccessHandler);
+//                    .failureHandler(oAuth2AuthenticationFailureHandler);
 
 
         // UsernamePasswordAuthenticationFilter 앞에 custom 필터 추가!
