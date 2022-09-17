@@ -1,4 +1,4 @@
-package com.zip.backend.security.oauth2.user;
+package com.zip.backend.security.oauth2.dto;
 
 import java.util.Map;
 

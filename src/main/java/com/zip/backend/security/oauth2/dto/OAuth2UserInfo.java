@@ -1,6 +1,4 @@
-package com.zip.backend.security.oauth2.user;
-
-import java.util.Map;
+package com.zip.backend.security.oauth2.dto;
 
 public interface OAuth2UserInfo {
 

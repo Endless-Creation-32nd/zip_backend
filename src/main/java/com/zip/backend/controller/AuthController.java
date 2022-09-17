@@ -66,14 +66,7 @@ public class AuthController {
                 .role(Role.USER)
                 .build();
         userRepository.save(localUserInfo);
-
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentContextPath().path("/user/me")
-//                .buildAndExpand(result.getId()).toUri();
-
-        // 주어진 location URI 와 함께 Created message status code 를 보냄
-//        return ResponseEntity.created(location)
-//                .body(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다."));
+        
 
         // 굳이 URI 를 /user/me 쪽으로 보내줄 필요 없어서 위 과정 생략함
         return new ResponseEntity<>(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다"), HttpStatus.CREATED);
