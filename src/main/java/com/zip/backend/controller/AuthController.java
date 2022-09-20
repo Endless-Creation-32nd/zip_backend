@@ -17,10 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -52,10 +49,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
-        if (userRepository.existsByProviderAndEmail(AuthProvider.local, signUpRequest.getEmail())) {
-            throw new RuntimeException("이미 해당 이메일을 사용하고 있습니다.");
-//            return ResponseEntity.ok(new EmailDuplicatedException("이미 해당 이메일을 사용하고 있습니다."));
-        }
         // 계정 생성 (local 로 생성 + DB 에 저장)
         // builder() 이후에 없는 필드들은 null 로 넘겨지게 된다.
         User localUserInfo = User.builder()
@@ -72,5 +65,13 @@ public class AuthController {
         return new ResponseEntity<>(new ApiResponse(true, "성공적으로 계정 생성이 되었습니다"), HttpStatus.CREATED);
     }
 
+    // 중복된 계정 확인
+    @GetMapping("/validate")
+    public ResponseEntity<ApiResponse> isDuplicatedEmail(@RequestParam String email) {
+        if (userRepository.existsByProviderAndEmail(AuthProvider.local, email)) {
+            return new ResponseEntity<>(new ApiResponse(false, "중복된 계정입니다"),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new ApiResponse(true, "사용 가능한 계정입니다"),HttpStatus.OK);
+    }
 
 }
